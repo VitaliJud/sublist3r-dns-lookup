@@ -4,180 +4,100 @@ Sublist3r is a python tool designed to enumerate subdomains of websites using OS
 
 [subbrute](https://github.com/TheRook/subbrute) was integrated with Sublist3r to increase the possibility of finding more subdomains using bruteforce with an improved wordlist. The credit goes to TheRook who is the author of subbrute.
 
-## Screenshots
-
-![Sublist3r](http://www.secgeek.net/images/Sublist3r.png "Sublist3r in action")
+**Original Repo for [Sublist3r](https://github.com/aboul3la/Sublist3r.git).**
 
 
 ## Installation
+Using Sublist3r involves Python. MacOS generally comes with pre-installed python3 - which is what used in the current example. Make sure to make adjustments to fit your current python version if needed.
 
-```
-git clone https://github.com/aboul3la/Sublist3r.git
-```
+1.**Clone Sublist3r**
+  
+  ```
+  git clone https://github.com/aboul3la/Sublist3r.git && cd sublist3r
+  ```
+  
+2.**Install Package**
 
-## Recommended Python Version:
+    pip install -r requirements.txt
+3.**Create a Python file to utilize Sublist3r - use `sub.py` file in current Repo**
+  ```
+# import the necessary package
+import subprocess
 
-Sublist3r currently supports **Python 2** and **Python 3**.
+# Function to call Sublist3r and get subdomains
+def get_subdomains(domain):
+    command = ["python", "sublist3r.py", "-d", domain, "-o", "subdomains.txt"]
+    try:
+        subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        with open("subdomains.txt", "r") as file:
+            subdomains = file.readlines()
+        
+        # Add the root domain to the list of subdomains
+        subdomains.append(domain + '\n')  # Ensure it goes to a new line in the output
 
-* The recommended version for Python 2 is **2.7.x**
-* The recommended version for Python 3 is **3.4.x**
+        # Write the updated list back to the file (optional)
+        with open("subdomains.txt", "w") as file:
+            file.writelines(subdomains)
+        
+        return ''.join(subdomains)  # Return as a single string if needed
+    except subprocess.CalledProcessError as e:
+        print("Failed to run Sublist3r")
+        return None
 
-## Dependencies:
-
-Sublist3r depends on the `requests`, `dnspython` and `argparse` python modules.
-
-These dependencies can be installed using the requirements file:
-
-- Installation on Windows:
-```
-c:\python27\python.exe -m pip install -r requirements.txt
-```
-- Installation on Linux
-```
-sudo pip install -r requirements.txt
-```
-
-Alternatively, each module can be installed independently as shown below.
-
-#### Requests Module (http://docs.python-requests.org/en/latest/)
-
-- Install for Windows:
-```
-c:\python27\python.exe -m pip install requests
-```
-
-- Install for Ubuntu/Debian:
-```
-sudo apt-get install python-requests
-```
-
-- Install for Centos/Redhat:
-```
-sudo yum install python-requests
+# Example usage
+domain = "example.com"
+subdomains = get_subdomains(domain)
+if subdomains:
+    print("Found subdomains including the root domain:")
+    print(subdomains)
 ```
 
-- Install using pip on Linux:
-```
-sudo pip install requests
-```
+4.**Run Your Script**
 
-#### dnspython Module (http://www.dnspython.org/)
-
-- Install for Windows:
 ```
-c:\python27\python.exe -m pip install dnspython
+python3 your_script_name.py
 ```
 
-- Install for Ubuntu/Debian:
+5.**Check `subdomains.txt` file to make sure you have list of all subdomains including the root domain**
+
+6.**Open a text editor and Create the following Bash script - use `run_nslookup.sh` file in current Repo**
 ```
-sudo apt-get install python-dnspython
+#!/bin/bash
+
+# Check if a file name is provided as an argument
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <filename>"
+    exit 1
+fi
+
+# File where the subdomains are stored
+FILE=$1
+
+# Check if the file exists
+if [ ! -f "$FILE" ]; then
+    echo "File not found!"
+    exit 1
+fi
+
+# Output file for nslookup results
+OUTPUT_FILE="nslookup_results.txt"
+
+# Ensure the output file is empty
+> "$OUTPUT_FILE"
+
+# Read the file line by line
+while IFS= read -r subdomain
+do
+    echo "Running nslookup for $subdomain" | tee -a "$OUTPUT_FILE"
+    echo "A and CNAME records:" | tee -a "$OUTPUT_FILE"
+    nslookup "$subdomain" | tee -a "$OUTPUT_FILE"
+    echo "TXT records:" | tee -a "$OUTPUT_FILE"
+    nslookup -type=TXT "$subdomain" | tee -a "$OUTPUT_FILE"
+    echo "-----------------------------------------------------" | tee -a "$OUTPUT_FILE"
+done < "$FILE"
+
+echo "All nslookup results have been saved to $OUTPUT_FILE"
 ```
-
-- Install using pip:
-```
-sudo pip install dnspython
-```
-
-#### argparse Module
-
-- Install for Ubuntu/Debian:
-```
-sudo apt-get install python-argparse
-```
-
-- Install for Centos/Redhat:
-```
-sudo yum install python-argparse
-``` 
-
-- Install using pip:
-```
-sudo pip install argparse
-```
-
-**for coloring in windows install the following libraries**
-```
-c:\python27\python.exe -m pip install win_unicode_console colorama
-```
-
-## Usage
-
-Short Form    | Long Form     | Description
-------------- | ------------- |-------------
--d            | --domain      | Domain name to enumerate subdomains of
--b            | --bruteforce  | Enable the subbrute bruteforce module
--p            | --ports       | Scan the found subdomains against specific tcp ports
--v            | --verbose     | Enable the verbose mode and display results in realtime
--t            | --threads     | Number of threads to use for subbrute bruteforce
--e            | --engines     | Specify a comma-separated list of search engines
--o            | --output      | Save the results to text file
--h            | --help        | show the help message and exit
-
-### Examples
-
-* To list all the basic options and switches use -h switch:
-
-```python sublist3r.py -h```
-
-* To enumerate subdomains of specific domain:
-
-``python sublist3r.py -d example.com``
-
-* To enumerate subdomains of specific domain and show only subdomains which have open ports 80 and 443 :
-
-``python sublist3r.py -d example.com -p 80,443``
-
-* To enumerate subdomains of specific domain and show the results in realtime:
-
-``python sublist3r.py -v -d example.com``
-
-* To enumerate subdomains and enable the bruteforce module:
-
-``python sublist3r.py -b -d example.com``
-
-* To enumerate subdomains and use specific engines such Google, Yahoo and Virustotal engines
-
-``python sublist3r.py -e google,yahoo,virustotal -d example.com``
+7.**Check `nslookup_results.txt` file for your list of DNS records (A, CNAME and TXT) for all subdomains and root domain**
 
 
-## Using Sublist3r as a module in your python scripts
-
-**Example**
-
-```python
-import sublist3r 
-subdomains = sublist3r.main(domain, no_threads, savefile, ports, silent, verbose, enable_bruteforce, engines)
-```
-The main function will return a set of unique subdomains found by Sublist3r
-
-**Function Usage:**
-* **domain**: The domain you want to enumerate subdomains of.
-* **savefile**: save the output into text file.
-* **ports**: specify a comma-sperated list of the tcp ports to scan.
-* **silent**: set sublist3r to work in silent mode during the execution (helpful when you don't need a lot of noise).
-* **verbose**: display the found subdomains in real time.
-* **enable_bruteforce**: enable the bruteforce module.
-* **engines**: (Optional) to choose specific engines.
-
-Example to enumerate subdomains of Yahoo.com:
-```python
-import sublist3r 
-subdomains = sublist3r.main('yahoo.com', 40, 'yahoo_subdomains.txt', ports= None, silent=False, verbose= False, enable_bruteforce= False, engines=None)
-```
-
-## License
-
-Sublist3r is licensed under the GNU GPL license. take a look at the [LICENSE](https://github.com/aboul3la/Sublist3r/blob/master/LICENSE) for more information.
-
-
-## Credits
-
-* [TheRook](https://github.com/TheRook) - The bruteforce module was based on his script **subbrute**. 
-* [Bitquark](https://github.com/bitquark) - The Subbrute's wordlist was based on his research **dnspop**. 
-
-## Thanks
-
-* Special Thanks to [Ibrahim Mosaad](https://twitter.com/ibrahim_mosaad) for his great contributions that helped in improving the tool.
-
-## Version
-**Current version is 1.0**

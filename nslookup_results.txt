@@ -1,0 +1,111 @@
+Running nslookup for AS207960 Test Intermediate - example.com
+A and CNAME records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find AS207960\032Test\032Intermediate\032-\032example.com: NXDOMAIN
+
+TXT records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find AS207960\032Test\032Intermediate\032-\032example.com: NXDOMAIN
+
+-----------------------------------------------------
+Running nslookup for www.example.com
+A and CNAME records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+Non-authoritative answer:
+Name:	www.example.com
+Address: 93.184.216.34
+
+TXT records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+Non-authoritative answer:
+www.example.com	text = "v=spf1 -all"
+www.example.com	text = "wgyf8z8cgvm2qmxpnbnldrcltvk4xqfn"
+
+Authoritative answers can be found from:
+
+-----------------------------------------------------
+Running nslookup for dev.example.com
+A and CNAME records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find dev.example.com: NXDOMAIN
+
+TXT records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find dev.example.com: NXDOMAIN
+
+-----------------------------------------------------
+Running nslookup for m.example.com
+A and CNAME records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find m.example.com: NXDOMAIN
+
+TXT records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find m.example.com: NXDOMAIN
+
+-----------------------------------------------------
+Running nslookup for products.example.com
+A and CNAME records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find products.example.com: NXDOMAIN
+
+TXT records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find products.example.com: NXDOMAIN
+
+-----------------------------------------------------
+Running nslookup for support.example.com
+A and CNAME records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find support.example.com: NXDOMAIN
+
+TXT records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+** server can't find support.example.com: NXDOMAIN
+
+-----------------------------------------------------
+Running nslookup for m.testexample.com
+A and CNAME records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+Non-authoritative answer:
+Name:	m.testexample.com
+Address: 13.248.169.48
+Name:	m.testexample.com
+Address: 76.223.54.146
+
+TXT records:
+Server:		127.0.2.2
+Address:	127.0.2.2#53
+
+Non-authoritative answer:
+m.testexample.com	text = "v=spf1 -all"
+
+Authoritative answers can be found from:
+
+-----------------------------------------------------
